@@ -31,7 +31,7 @@ def test_should_raise_exception_when_not_have_tag():
     html = '<body><h1>Titulo</h1></body>'
     html_func = HtmlSpec(html)
     try:
-        html_func.has_tag('h3')
+        html_func.has('h3')
         assert False
     except DoesNotHaveTagException, e:
         got = e.message
@@ -43,7 +43,7 @@ def test_should_raise_exception_when_not_have_tag():
 def test_should_be_return_new_instance_in_have_tag():
     html = "<body><p>testando</p></body>"
     html_func = HtmlSpec(html)
-    resp = html_func.has_tag('p')
+    resp = html_func.has('p')
 
     assert isinstance(resp, HtmlSpec) == True
     assert resp.node.text == "testando"
@@ -51,7 +51,7 @@ def test_should_be_return_new_instance_in_have_tag():
 def test_should_be_return_new_instance_in_have_tag_with_find_child():
     html = "<body><p><strong>Meu teste</strong></p><strong>Nao</strong></body>"
     html_func = HtmlSpec(html)
-    resp = html_func.has_tag('p').has_tag('strong')
+    resp = html_func.has('p').has('strong')
 		
     assert isinstance(resp, HtmlSpec) == True
     assert resp.node.text != "Nao"
@@ -61,7 +61,7 @@ def test_should_be_return_new_instance_in_have_tag_with_find_some_level():
     html_func = HtmlSpec(HTML)
     resp = html_func.with_tag('p').with_tag('h2')
     
-    html_func.has_tag('p').with_tag('strong').with_tag('span')
+    html_func.has('p').with_tag('strong').with_tag('span')
 		
     assert isinstance(resp, HtmlSpec) == True
     assert True
@@ -71,7 +71,7 @@ def test_should_be_find_tag_with_attributes():
         <body><div>Nao pode peguar esse</div><div id='test_id'><strong>test with attr</strong></div></body>
     """
     spec = HtmlSpec(html)
-    resp = spec.has_tag('div', id='test_id').has_tag('strong')
+    resp = spec.has('div', id='test_id').has('strong')
     assert resp.node.text == 'test with attr'
 
 def test_make_xpath_with_kwargs():

@@ -22,7 +22,7 @@ class HtmlSpec(object):
         xpath = self.make_xpath(tag_name, **kwargs)
         return self.tree.find(xpath)
 
-    def has_tag(self, tag_name, **kwargs):
+    def has(self, tag_name, **kwargs):
         self.node = self.__find__(tag_name, **kwargs)
         
         if self.node != None:
