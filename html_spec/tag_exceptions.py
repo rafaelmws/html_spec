@@ -3,3 +3,6 @@
 
 class DoesNotHaveTagException(AssertionError):
     pass
+
+class FoundManyTagsException(AssertionError):
+    pass

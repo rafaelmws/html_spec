@@ -3,6 +3,7 @@
 
 from html_spec.html_spec import HtmlSpec
 from html_spec.tag_exceptions import DoesNotHaveTagException
+from html_spec.tag_exceptions import FoundManyTagsException
 
 HTML = """
         <body>
@@ -14,21 +15,12 @@ HTML = """
         </body>
 """
 
-def test_make_xpath():
-    html = "<body><p><strong>Meu teste</strong></p></body>"
-    tag = "p"
-    
-    html_func = HtmlSpec(html)
-    resp = html_func.make_xpath(tag)
-    
-    assert resp == ".//p"
-
 def test_should_be_instance_html_functional():
-    v = HtmlSpec(html='<teste />')
+    v = HtmlSpec(HTML)
     assert isinstance(v, HtmlSpec) == True
 
 def test_should_raise_exception_when_not_have_tag():
-    html = '<body><h1>Titulo</h1></body>'
+    html = '<html><body><h1>Titulo</h1></body></html>'
     html_func = HtmlSpec(html)
     try:
         html_func.has('h3')
@@ -36,6 +28,17 @@ def test_should_raise_exception_when_not_have_tag():
     except DoesNotHaveTagException, e:
         got = e.message
         expected = 'Html does not have tag h3'
+        assert expected == got, "\nexpected: %s \ngot: %s" % (expected, got)
+
+def test_should_raise_exception_when_have_many_tag_results():
+    html = '<html><body><h1>Titulo</h1><h1>aaa</h1></body></html>'
+    html_func = HtmlSpec(html)
+    try:
+        html_func.has('h1')
+        assert False
+    except FoundManyTagsException, e:
+        got = e.message
+        expected = 'Html have many tags h1'
         assert expected == got, "\nexpected: %s \ngot: %s" % (expected, got)
 
 # Deve retornar uma nova instancia da classe HtmlSpec contendo como
@@ -71,10 +74,5 @@ def test_should_be_find_tag_with_attributes():
         <body><div>Nao pode peguar esse</div><div id='test_id'><strong>test with attr</strong></div></body>
     """
     spec = HtmlSpec(html)
-    resp = spec.has('div', id='test_id').has('strong')
+    resp = spec.has("div#test_id").has('strong')
     assert resp.node.text == 'test with attr'
-
-def test_make_xpath_with_kwargs():
-    spec = HtmlSpec(HTML)
-    xpath = spec.make_xpath('div',id='tag_id')
-    assert xpath == ".//div[@id='tag_id']"

@@ -2,8 +2,10 @@
 # -*- coding:utf-8 -*-
 
 import re
-from lxml.html import fromstring, tostring
-from tag_exceptions import DoesNotHaveTagException
+from lxml.html import fromstring
+from lxml.etree import tostring
+from lxml.cssselect import CSSSelector
+from tag_exceptions import DoesNotHaveTagException, FoundManyTagsException
 
 class HtmlSpec(object):
     html = None
@@ -18,18 +20,19 @@ class HtmlSpec(object):
         if(self.node == None):
             self.node = self.tree
 
-    def __find__(self, tag_name, **kwargs):
-        xpath = self.make_xpath(tag_name, **kwargs)
-        return self.tree.find(xpath)
+    def __find__(self, tag_name):
+        return self.tree.cssselect(tag_name)
 
-    def has(self, tag_name, **kwargs):
-        self.node = self.__find__(tag_name, **kwargs)
-        
-        if self.node != None:
-            return HtmlSpec(tostring(self.node),
-                                    node = self.node)
-        else:
+    def has(self, tag_name):
+        result = self.__find__(tag_name)
+
+        if len(result) == 0:
             raise DoesNotHaveTagException('Html does not have tag %s' % tag_name)
+        elif len(result) > 1:
+            raise FoundManyTagsException('Html have many tags %s' % tag_name)
+
+        self.node = result[0]
+        return HtmlSpec(tostring(self.node), node = self.node)
     
     def with_tag(self, tag_name):
         self.__find__(tag_name)
@@ -38,14 +41,3 @@ class HtmlSpec(object):
             return HtmlSpec(self.html)
         else:
             raise DoesNotHaveTagException('Html does not have tag %s' % tag_name)
-
-    def make_xpath(self, tag, **kwargs):
-        if kwargs == {}:
-            return ".//%s" % tag
-        else:
-            attrs = ""
-            for key in kwargs.keys():
-                attr = "@%s='%s'," % (key, kwargs[key])
-                attrs = "%s%s" % (attrs, attr)
-        
-            return ".//%s[%s]" % (tag, attrs[:-1])
