@@ -41,7 +41,7 @@ def test_should_raise_exception_when_not_have_tag():
 # Deve retornar uma nova instancia da classe HtmlSpec contendo como
 # parent o xpath usado anteriormente para buscar a tag html
 def test_should_be_return_new_instance_in_have_tag():
-    html = "<body><p>testando</p></body>"
+    html = "<html><body><p>testando</p></body></html>"
     html_func = HtmlSpec(html)
     resp = html_func.has('p')
 

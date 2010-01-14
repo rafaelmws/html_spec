@@ -2,7 +2,7 @@
 # -*- coding:utf-8 -*-
 
 import re
-from lxml import etree
+from lxml.html import fromstring, tostring
 from tag_exceptions import DoesNotHaveTagException
 
 class HtmlSpec(object):
@@ -12,7 +12,7 @@ class HtmlSpec(object):
 
     def __init__(self, html, node=None):
         self.html = html
-        self.tree = etree.fromstring(str(html))
+        self.tree = fromstring(str(html))
         self.node = node
         
         if(self.node == None):
@@ -26,7 +26,7 @@ class HtmlSpec(object):
         self.node = self.__find__(tag_name, **kwargs)
         
         if self.node != None:
-            return HtmlSpec(etree.tostring(self.node),
+            return HtmlSpec(tostring(self.node),
                                     node = self.node)
         else:
             raise DoesNotHaveTagException('Html does not have tag %s' % tag_name)
