@@ -23,16 +23,22 @@ class HtmlSpec(object):
     def __find__(self, tag_name):
         return self.tree.cssselect(tag_name)
 
-    def has(self, tag_name):
+    def has(self, tag_name, count=1):
         result = self.__find__(tag_name)
 
         if len(result) == 0:
             raise DoesNotHaveTagException('Html does not have tag %s' % tag_name)
-        elif len(result) > 1:
-            raise FoundManyTagsException('Html have many tags %s' % tag_name)
+        elif len(result) != count:
+            raise FoundManyTagsException('expected %d foundes %d' % (count, len(result)))
 
-        self.node = result[0]
-        return HtmlSpec(tostring(self.node), node = self.node)
+        if len(result) == 1:
+            self.node = result[0]
+            return HtmlSpec(tostring(self.node), node = self.node)
+        else:
+            html_specs = []
+            for r in result:
+                html_specs.appen(HtmlSpec(tostring(r), node=r))
+            return html_specs
     
     def with_tag(self, tag_name):
         self.__find__(tag_name)
