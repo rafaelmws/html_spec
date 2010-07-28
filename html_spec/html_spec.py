@@ -29,7 +29,7 @@ class HtmlSpec(object):
         if len(result) == 0:
             raise DoesNotHaveTagException('Html does not have tag %s' % tag_name)
         elif len(result) != count:
-            raise FoundManyTagsException('expected %d foundes %d' % (count, len(result)))
+            raise FoundManyTagsException('Expected %d founded %d' % (count, len(result)))
 
         if len(result) == 1:
             self.node = result[0]
@@ -37,7 +37,7 @@ class HtmlSpec(object):
         else:
             html_specs = []
             for r in result:
-                html_specs.appen(HtmlSpec(tostring(r), node=r))
+                html_specs.append(HtmlSpec(tostring(r), node=r))
             return html_specs
     
     def with_tag(self, tag_name):

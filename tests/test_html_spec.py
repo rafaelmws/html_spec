@@ -30,16 +30,26 @@ def test_should_raise_exception_when_not_have_tag():
         expected = 'Html does not have tag h3'
         assert expected == got, "\nexpected: %s \ngot: %s" % (expected, got)
 
-def test_should_raise_exception_when_have_many_tag_results():
+def test_should_have_many_tag_results():
     html = '<html><body><h1>Titulo</h1><h1>aaa</h1></body></html>'
     html_func = HtmlSpec(html)
     try:
-        html_func.has('h1')
+        html_func.has('h1', count=4)
         assert False
     except FoundManyTagsException, e:
         got = e.message
-        expected = 'Html have many tags h1'
+        expected = 'Expected 4 founded 2'
         assert expected == got, "\nexpected: %s \ngot: %s" % (expected, got)
+
+def test_should_have_many_tag_results_2():
+    html = '<html><body><h1>Titulo</h1><h1>aaa</h1></body></html>'
+    html_func = HtmlSpec(html)
+
+    html_func = html_func.has('h1', count=2)
+    
+    assert html_func[0].node.text == 'Titulo'
+    assert html_func[1].node.text == 'aaa'
+
 
 # Deve retornar uma nova instancia da classe HtmlSpec contendo como
 # parent o xpath usado anteriormente para buscar a tag html
