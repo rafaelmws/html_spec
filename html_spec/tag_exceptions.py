@@ -6,3 +6,9 @@ class DoesNotHaveTagException(AssertionError):
 
 class FoundManyTagsException(AssertionError):
     pass
+
+class ExpectedTagsException(AssertionError):
+	pass
+
+class DifferentTextException(AssertionError):
+	pass

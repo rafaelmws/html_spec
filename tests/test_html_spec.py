@@ -4,7 +4,8 @@
 from html_spec.html_spec import HtmlSpec
 from html_spec.tag_exceptions import DoesNotHaveTagException
 from html_spec.tag_exceptions import FoundManyTagsException
-
+from html_spec.tag_exceptions import ExpectedTagsException
+from html_spec.tag_exceptions import DifferentTextException
 HTML = """
         <body>
         <p>
@@ -26,7 +27,7 @@ def test_should_raise_exception_when_not_have_tag():
         html_func.has('h3')
         assert False
     except DoesNotHaveTagException, e:
-        got = e.message
+        got = str(e)
         expected = 'Html does not have tag h3'
         assert expected == got, "\nexpected: %s \ngot: %s" % (expected, got)
 
@@ -36,9 +37,9 @@ def test_should_raise_exception_when_have_many_tag_results():
     try:
         html_func.has('h1')
         assert False
-    except FoundManyTagsException, e:
-        got = e.message
-        expected = 'Html have many tags h1'
+    except ExpectedTagsException, e:
+        got = str(e)
+        expected = 'Expected 1 h1, founded 2'
         assert expected == got, "\nexpected: %s \ngot: %s" % (expected, got)
 
 # Deve retornar uma nova instancia da classe HtmlSpec contendo como
@@ -76,3 +77,33 @@ def test_should_be_find_tag_with_attributes():
     spec = HtmlSpec(html)
     resp = spec.has("div#test_id").has('strong')
     assert resp.node.text == 'test with attr'
+
+def test_should_be_find_many_tags():
+	html = """
+		<br /><br /><br />
+	"""
+	spec = HtmlSpec(html)
+	spec.has("br", count=3)
+
+def test_should_be_text():
+	html = """
+		<p>mais um teste</p>
+	"""
+	spec = HtmlSpec(html)
+	spec.text(u"mais um teste")
+
+def test_should_be_raise_exception_with_text():
+	html = """
+		<p>mais um teste</p>
+	"""
+	spec = HtmlSpec(html)
+	try:
+		spec.text("text")
+		assert False
+	except DifferentTextException, e:
+		assert str(e) == "Text different text, mais um teste"
+
+def test_deve_encontrar_mais_de_um_elemento_com_textos_diferentes():
+	html = """
+		<p>mais um teste</p>
+	"""
